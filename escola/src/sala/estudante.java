@@ -48,16 +48,30 @@ public class estudante {
 		}
 	}
 	
-	static void listarApartir(int x){
+	static void listarApartir(){
 		System.out.println("Escolha a paritr de qual posição deseja listar:  ");
 		Scanner scan = new Scanner(System.in);
-		x = scan.nextInt();
+		int x = scan.nextInt(), ct = 0;
 		for(estudante estud : estud){
-			if(estud.length >= x) {
+			if(ct >= x) {
 			System.out.println("Estudante: "+ estud.getNome()+ " Matrícula: "+ estud.getId());
+			}else {
+				System.out.println("Teste");
 			}
+			ct ++;
 		}
 	}
+	
+	static void listarXeY(int x, int y) {
+		int ct =0;
+		for(estudante estud : estud){
+			if(ct >= x && ct <= y) {
+				System.out.println("Estudante: "+ estud.getNome()+ " Matrícula: "+ estud.getId());
+				ct++;
+				}
+			}
+		}
+		
 	
 	static void matricular(String semestre) {
 		
@@ -89,7 +103,8 @@ public class estudante {
 		
 		
 		listar();
-		
+		listarApartir();
+		listarXeY(2,3);
 		
 	}
 	
