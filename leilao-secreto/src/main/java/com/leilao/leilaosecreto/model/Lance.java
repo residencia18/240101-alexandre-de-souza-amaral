@@ -22,13 +22,43 @@ public class Lance {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_leilao", referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "idLeilao", referencedColumnName = "id", nullable = false)
 	private Leilao leilao;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_concorrente", referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "idConcorrente", referencedColumnName = "id", nullable = false)
 	private Concorrente concorrente;
 	
 	private Double valor;
+
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Leilao getLeilao() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Concorrente getConcorrente() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setLeilao(Leilao leilao2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setConcorrente(Concorrente concorrente2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setValor(Double valor2) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
