@@ -31,34 +31,4 @@ public class Lance {
 	
 	private Double valor;
 
-	public Long getId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Leilao getLeilao() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Concorrente getConcorrente() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setLeilao(Leilao leilao2) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setConcorrente(Concorrente concorrente2) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setValor(Double valor2) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

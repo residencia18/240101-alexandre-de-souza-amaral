@@ -3,8 +3,10 @@ package com.leilao.leilaosecreto.controller;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.leilao.leilaosecreto.controller.dto.LanceDTO;
+import com.leilao.leilaosecreto.controller.dto.LeilaoDTO;
 import com.leilao.leilaosecreto.controller.form.LanceForm;
 import com.leilao.leilaosecreto.model.Lance;
 import com.leilao.leilaosecreto.repository.LanceRepository;
@@ -47,7 +50,8 @@ public class LanceController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<LanceDTO> pegarPorId(@PathVariable Long id) {
-
+		//Optional -> Pode ser que tenha o registro pode ser que não tenha
+		//Elimina o erro caso o parâmetro passado não exista
 		Optional<Lance> lance = repository.findById(id);
 		
 		if (lance.isPresent()) {
@@ -57,30 +61,79 @@ public class LanceController {
 		return ResponseEntity.notFound().build();
 	}
 	
+	@GetMapping("/leilao={id}")
+	public ResponseEntity<List<LanceDTO>> pegarLancesPorIdLeilao(@PathVariable Long leilaoId) {
+		List<Lance> lances = repository.getLancesByLeilaoId(leilaoId);
+		
+        if (lances.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        List<LanceDTO> lancesDTO = lances.stream().map(LanceDTO::new).collect(Collectors.toList());
+        return ResponseEntity.ok(lancesDTO);
+	}
+	
+	@GetMapping("/concorrente={id}")
+	public ResponseEntity<List<LanceDTO>> pegarLancesPorIdConcorrente(@PathVariable Long concorrenteId) {
+		List<Lance> lances = repository.getLancesByConcorrenteId(concorrenteId);
+		
+        if (lances.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        List<LanceDTO> lancesDTO = lances.stream().map(LanceDTO::new).collect(Collectors.toList());
+        return ResponseEntity.ok(lancesDTO);
+	}
+	
 	@PutMapping("/{id}")
 	@Transactional
 	public ResponseEntity<LanceDTO> atualizar(@PathVariable Long id, @RequestBody LanceForm form) {
-		Optional<Lance> optional = repository.findById(id);
+		Long idConcorrente = form.getConcorrente().getId();
+		Long idLeilao = form.getLeilao().getId();
 		
-		if (optional.isPresent()) {
-			Lance lance = form.atualizar(id, repository);
-			return ResponseEntity.ok(new LanceDTO(lance));
-		}
-		
-		return ResponseEntity.notFound().build();
+        if (id == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        if (!repository.leilaoExists(idLeilao)) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        if (!repository.concorrenteExists(idConcorrente)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        if (repository.isLeilaoFechado(idLeilao)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Lance lance = form.atualizar(idLeilao, repository);
+        if (lance == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        return ResponseEntity.ok(new LanceDTO(lance));
 		
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> remover(@PathVariable Long id) {
-		Optional<Lance> optional = repository.findById(id);
+        if (id == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        Optional<Lance> lance = repository.findById(id);
 		
-		if (optional.isPresent()) {
-			repository.deleteById(id);
-			return ResponseEntity.ok().build();
+		if (!lance.isPresent()) {
+			return ResponseEntity.notFound().build();
 		}
-		
-		return ResponseEntity.notFound().build();
+        
+        if (lance.isPresent() && repository.isLeilaoFechado(lance.get().getLeilao().getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        
+        repository.deleteById(id);
+		return ResponseEntity.ok().build();
 	}
 	
 }

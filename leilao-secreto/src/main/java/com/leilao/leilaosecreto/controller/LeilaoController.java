@@ -83,33 +83,5 @@ public class LeilaoController {
 		
 		return ResponseEntity.notFound().build();
 	}
-	
-	@GetMapping("/{id}")
-	public ResponseEntity<VencedorLeilaoDTO> vencedorLeilao(@PathVariable Long id) {
 		
-	    if (id == null) {
-	        return ResponseEntity.badRequest().build();
-	    }
-
-	   
-	    Optional<Leilao> optional = repository.findById(id);
-	    if (optional.isEmpty()) {
-	        return ResponseEntity.notFound().build();
-	    }
-
-	    
-	    Leilao leilao = optional.get();
-	    if ("Fechado".equals(leilao.getStatus())) {
-	        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-	    }
-
-	    List<VencedorLeilaoDTO> resultados = repository.getVencedorLeilao(id);
-	    if (!resultados.isEmpty()) {
-	        VencedorLeilaoDTO resultado = resultados.get(0); 
-	        return ResponseEntity.ok(resultado);
-	    }
-
-	    return ResponseEntity.notFound().build();
-	}
-	
 }

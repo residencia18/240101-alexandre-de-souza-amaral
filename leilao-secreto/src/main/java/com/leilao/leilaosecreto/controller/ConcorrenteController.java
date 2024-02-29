@@ -47,7 +47,8 @@ public class ConcorrenteController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<ConcorrenteDTO> pegarPorId(@PathVariable Long id) {
-
+		//Optional -> Pode ser que tenha o registro pode ser que não tenha
+		//Elimina o erro caso o parâmetro passado não exista
 		Optional<Concorrente> concorrente = repository.findById(id);
 		
 		if (concorrente.isPresent()) {
